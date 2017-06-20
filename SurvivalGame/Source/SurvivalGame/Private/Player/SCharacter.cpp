@@ -9,6 +9,7 @@
 #include "SCarryObjectComponent.h"
 #include "SBaseCharacter.h"
 #include "Runtime/Engine/Classes/Animation/AnimInstance.h"
+#include "ICloudyGameStateAPI.h"
 
 // Sets default values
 ASCharacter::ASCharacter(const class FObjectInitializer& ObjectInitializer)
@@ -334,6 +335,8 @@ bool ASCharacter::ServerSetIsJumping_Validate(bool NewJumping)
 
 void ASCharacter::OnStartSprinting()
 {
+	ICloudyGameStateAPI::Get().Cloudy_MovementStart(GetWorld());
+
 	if (CarriedObjectComp->GetIsCarryingActor())
 	{
 		CarriedObjectComp->Drop();
@@ -345,6 +348,8 @@ void ASCharacter::OnStartSprinting()
 
 void ASCharacter::OnStopSprinting()
 {
+	ICloudyGameStateAPI::Get().Cloudy_MovementStop(GetWorld());
+
 	SetSprinting(false);
 }
 
@@ -672,6 +677,7 @@ void ASCharacter::OnStopFire()
 
 void ASCharacter::StartWeaponFire()
 {
+	ICloudyGameStateAPI::Get().Cloudy_ShootingStart(GetWorld());
 	if (!bWantsToFire)
 	{
 		bWantsToFire = true;
@@ -685,6 +691,7 @@ void ASCharacter::StartWeaponFire()
 
 void ASCharacter::StopWeaponFire()
 {
+	ICloudyGameStateAPI::Get().Cloudy_ShootingStop(GetWorld());
 	if (bWantsToFire)
 	{
 		bWantsToFire = false;

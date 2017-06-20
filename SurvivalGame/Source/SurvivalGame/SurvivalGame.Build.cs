@@ -11,7 +11,7 @@ public class SurvivalGame : ModuleRules
             /* Temporarily added GameplayTasks to workaround 4.12 compilation bug. */
             "GameplayTasks" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PrivateDependencyModuleNames.AddRange(new string[] { "CloudyGameStateAPI" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
