@@ -175,6 +175,8 @@ void ASCharacter::MoveForward(float Val)
 		const FRotator Rotation = bLimitRotation ? GetActorRotation() : Controller->GetControlRotation();
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
 
+		ICloudyGameStateAPI::Get().Cloudy_MovementStart(GetWorld());
+
 		AddMovementInput(Direction, Val);
 	}
 }
@@ -186,6 +188,9 @@ void ASCharacter::MoveRight(float Val)
 	{
 		const FRotator Rotation = GetActorRotation();
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
+
+		ICloudyGameStateAPI::Get().Cloudy_MovementStart(GetWorld());
+
 		AddMovementInput(Direction, Val);
 	}
 }
@@ -665,19 +670,23 @@ void ASCharacter::OnStartFire()
 		return;
 	}
 
+	ICloudyGameStateAPI::Get().Cloudy_ShootingStart(GetWorld(), true);
+
 	StartWeaponFire();
 }
 
 
 void ASCharacter::OnStopFire()
 {
+	ICloudyGameStateAPI::Get().Cloudy_ShootingStop(GetWorld());
+
 	StopWeaponFire();
 }
 
 
 void ASCharacter::StartWeaponFire()
 {
-	ICloudyGameStateAPI::Get().Cloudy_ShootingStart(GetWorld());
+	ICloudyGameStateAPI::Get().Cloudy_ShootingStart(GetWorld(), true);
 	if (!bWantsToFire)
 	{
 		bWantsToFire = true;
