@@ -134,6 +134,8 @@ void ASCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis("MoveRight", this, &ASCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("Turn", this, &ASCharacter::CallLooking);
+	PlayerInputComponent->BindAxis("LookUp", this, &ASCharacter::CallLooking);
 
 	PlayerInputComponent->BindAction("SprintHold", IE_Pressed, this, &ASCharacter::OnStartSprinting);
 	PlayerInputComponent->BindAction("SprintHold", IE_Released, this, &ASCharacter::OnStopSprinting);
@@ -165,6 +167,13 @@ void ASCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("PickupObject", IE_Pressed, this, &ASCharacter::OnToggleCarryActor);
 }
 
+void ASCharacter::CallLooking(float val)
+{
+	if (val != 0)
+	{
+		ICloudyGameStateAPI::Get().Cloudy_LookingStart(GetWorld());
+	}
+}
 
 void ASCharacter::MoveForward(float Val)
 {

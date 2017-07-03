@@ -65,6 +65,8 @@ public:
 	/* Movement                                                             */
 	/************************************************************************/
 
+	void CallLooking(float val);
+
 	virtual void MoveForward(float Val);
 
 	virtual void MoveRight(float Val);
