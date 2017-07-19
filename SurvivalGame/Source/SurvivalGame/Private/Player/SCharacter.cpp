@@ -679,7 +679,7 @@ void ASCharacter::OnStartFire()
 		return;
 	}
 
-	ICloudyGameStateAPI::Get().Cloudy_ShootingStart(GetWorld(), true);
+	ICloudyGameStateAPI::Get().Cloudy_ActiveStart(GetWorld(), true);
 
 	StartWeaponFire();
 }
@@ -687,7 +687,7 @@ void ASCharacter::OnStartFire()
 
 void ASCharacter::OnStopFire()
 {
-	ICloudyGameStateAPI::Get().Cloudy_ShootingStop(GetWorld());
+	ICloudyGameStateAPI::Get().Cloudy_ActiveStop(GetWorld());
 
 	StopWeaponFire();
 }
@@ -695,7 +695,7 @@ void ASCharacter::OnStopFire()
 
 void ASCharacter::StartWeaponFire()
 {
-	ICloudyGameStateAPI::Get().Cloudy_ShootingStart(GetWorld(), true);
+	ICloudyGameStateAPI::Get().Cloudy_ActiveStart(GetWorld(), true);
 	if (!bWantsToFire)
 	{
 		bWantsToFire = true;
@@ -709,7 +709,7 @@ void ASCharacter::StartWeaponFire()
 
 void ASCharacter::StopWeaponFire()
 {
-	ICloudyGameStateAPI::Get().Cloudy_ShootingStop(GetWorld());
+	ICloudyGameStateAPI::Get().Cloudy_ActiveStop(GetWorld());
 	if (bWantsToFire)
 	{
 		bWantsToFire = false;
