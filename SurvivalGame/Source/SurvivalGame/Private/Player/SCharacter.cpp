@@ -62,6 +62,17 @@ ASCharacter::ASCharacter(const class FObjectInitializer& ObjectInitializer)
 	WeaponAttachPoint = TEXT("WeaponSocket");
 	PelvisAttachPoint = TEXT("PelvisSocket");
 	SpineAttachPoint = TEXT("SpineSocket");
+
+	// update collider
+	/*
+	USphereComponent *MyCollider = CreateDefaultSubobject<USphereComponent>(TEXT("MyCollider"));
+	FVector Origin, Extents;
+	this->GetActorBounds(false, Origin, Extents);
+	float MaxSize = FMath::Max3(Extents.X, Extents.Y, Extents.Z);
+
+	MyCollider->SetSphereRadius(MaxSize*3);
+	MyCollider->AttachTo(this->FindComponentByClass<USceneComponent>());
+	*/
 }
 
 

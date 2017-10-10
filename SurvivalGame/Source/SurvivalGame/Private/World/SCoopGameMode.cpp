@@ -39,6 +39,7 @@ void ASCoopGameMode::RestartPlayer(class AController* NewPlayer)
 			/* Get the origin of the first player we can find */
 			SpawnOrigin = MyCharacter->GetActorLocation();
 			StartRotation = MyCharacter->GetActorRotation();
+
 			break;
 		}
 	}
