@@ -57,6 +57,8 @@ ASCharacter::ASCharacter(const class FObjectInitializer& ObjectInitializer)
 	MaxHunger = 100;
 	Hunger = 0;
 
+	isTest = false;
+
 	/* Names as specified in the character skeleton */
 	WeaponAttachPoint = TEXT("WeaponSocket");
 	PelvisAttachPoint = TEXT("PelvisSocket");
@@ -86,8 +88,15 @@ void ASCharacter::Tick(float DeltaTime)
 		SetSprinting(true);
 	}
 
+
 	if (Controller && Controller->IsLocalController())
 	{
+		if (isTest && Controller->IsPlayerController()) {
+			APlayerController* playerController = (APlayerController*)Controller;
+			playerController->InputKey(EKeys::W, EInputEvent::IE_Pressed, 1.0, false);
+			playerController->InputKey(EKeys::D, EInputEvent::IE_Pressed, 1.0, false);
+		}
+
 		ASUsableActor* Usable = GetUsableInView();
 
 		// End Focus
@@ -131,8 +140,9 @@ void ASCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 	// Movement
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ASCharacter::MoveRight);
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	//PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	//PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("TestForward", this, &ASCharacter::TestForward);
 
 	PlayerInputComponent->BindAction("SprintHold", IE_Pressed, this, &ASCharacter::OnStartSprinting);
 	PlayerInputComponent->BindAction("SprintHold", IE_Released, this, &ASCharacter::OnStopSprinting);
@@ -178,6 +188,11 @@ void ASCharacter::MoveForward(float Val)
 	}
 }
 
+void ASCharacter::TestForward(float Val)
+{
+	if (Val != 0.f)
+		isTest = true;
+}
 
 void ASCharacter::MoveRight(float Val)
 {

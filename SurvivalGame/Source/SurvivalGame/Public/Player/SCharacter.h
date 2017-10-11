@@ -31,6 +31,8 @@ class SURVIVALGAME_API ASCharacter : public ASBaseCharacter
 
 	float LastMakeNoiseTime;
 
+	bool isTest = false;
+
 private:
 
 	/* Boom to handle distance to player mesh. */
@@ -68,6 +70,8 @@ public:
 	virtual void MoveForward(float Val);
 
 	virtual void MoveRight(float Val);
+
+	void TestForward(float Val);
 
 	/* Client mapped to Input */
 	void OnCrouchToggle();
