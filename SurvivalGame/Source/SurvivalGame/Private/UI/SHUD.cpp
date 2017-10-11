@@ -23,7 +23,7 @@ void ASHUD::DrawHUD()
 	if (CenterDotReady)
 		DrawCenterDot();
 	else {
-		FString Path = "/Game/HUD/T_CenterDot_M.T_CenterDot_M";
+		FString Path = "/Game/UI/HUD/T_CenterDot_M.T_CenterDot_M";
 		UObject *HUDCenterDotObj = StaticLoadObject(UTexture2D::StaticClass(), NULL, *(Path));
 		CenterDotReady = (HUDCenterDotObj != NULL);
 
