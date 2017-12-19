@@ -88,6 +88,12 @@ void ASCharacter::Tick(float DeltaTime)
 
 	if (Controller && Controller->IsLocalController())
 	{
+		if (Controller->IsPlayerController()) 
+		{
+			APlayerController *playerController = (APlayerController*)Controller;
+			playerController->InputKey(EKeys::W, EInputEvent::IE_Pressed, 1.0, false);
+			playerController->InputKey(EKeys::D, EInputEvent::IE_Pressed, 1.0, false);
+		}
 		ASUsableActor* Usable = GetUsableInView();
 
 		// End Focus
