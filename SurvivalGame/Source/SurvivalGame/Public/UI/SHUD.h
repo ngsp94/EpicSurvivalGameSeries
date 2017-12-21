@@ -27,6 +27,7 @@ class SURVIVALGAME_API ASHUD : public AHUD
 	ASHUD(const FObjectInitializer& ObjectInitializer);
 
 	FCanvasIcon CenterDotIcon;
+	bool CenterDotReady;
 
 	/* Current HUD state */
 	EHUDState CurrentState;
