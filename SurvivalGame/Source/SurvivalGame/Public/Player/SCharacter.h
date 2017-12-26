@@ -31,6 +31,9 @@ class SURVIVALGAME_API ASCharacter : public ASBaseCharacter
 
 	float LastMakeNoiseTime;
 
+	float Time;
+	float FPS;
+
 private:
 
 	/* Boom to handle distance to player mesh. */

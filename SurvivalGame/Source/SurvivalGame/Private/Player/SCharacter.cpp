@@ -81,6 +81,16 @@ void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Generate FPS
+	Time += DeltaTime;
+	FPS = 1.0 / DeltaTime;
+
+	if (Time > 10.0)
+	{
+		Time = 0.0;
+		FFileHelper::SaveStringToFile("GAverageFPS = " + FString::SanitizeFloat(FPS), *(FPaths::GameDir() + "fps.txt"));
+	}
+
 	if (bWantsToRun && !IsSprinting())
 	{
 		SetSprinting(true);
