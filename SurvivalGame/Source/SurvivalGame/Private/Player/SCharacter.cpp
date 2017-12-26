@@ -88,7 +88,8 @@ void ASCharacter::Tick(float DeltaTime)
 	if (Time > 10.0)
 	{
 		Time = 0.0;
-		FFileHelper::SaveStringToFile("GAverageFPS = " + FString::SanitizeFloat(FPS), *(FPaths::GameDir() + "fps.txt"));
+		FFileHelper::SaveStringToFile("GAverageFPS = " + FString::SanitizeFloat(FPS) + '\n', *(FPaths::GameDir() + "fps.txt"), 
+			FFileHelper::EEncodingOptions::AutoDetect, &IFileManager::Get(), EFileWrite::FILEWRITE_Append);
 	}
 
 	if (bWantsToRun && !IsSprinting())
@@ -98,12 +99,6 @@ void ASCharacter::Tick(float DeltaTime)
 
 	if (Controller && Controller->IsLocalController())
 	{
-		if (Controller->IsPlayerController()) 
-		{
-			APlayerController *playerController = (APlayerController*)Controller;
-			playerController->InputKey(EKeys::W, EInputEvent::IE_Pressed, 1.0, false);
-			playerController->InputKey(EKeys::D, EInputEvent::IE_Pressed, 1.0, false);
-		}
 		ASUsableActor* Usable = GetUsableInView();
 
 		// End Focus
