@@ -47,6 +47,7 @@ ASCharacter::ASCharacter(const class FObjectInitializer& ObjectInitializer)
 	bHasNewFocus = true;
 	TargetingSpeedModifier = 0.5f;
 	SprintingSpeedModifier = 2.5f;
+	bIsMoving = false;
 
 	Health = 100;
 
@@ -84,13 +85,44 @@ void ASCharacter::Tick(float DeltaTime)
 	// Generate FPS
 	Time += DeltaTime;
 	FPS = 1.0 / DeltaTime;
-
 	if (Time > 10.0)
 	{
-		Time = 0.0;
-		FFileHelper::SaveStringToFile("GAverageFPS = " + FString::SanitizeFloat(FPS) + '\n', *(FPaths::GameDir() + "fps.txt"), 
+		FFileHelper::SaveStringToFile("GAverageFPS = " + FString::SanitizeFloat(FPS) + '\n', *(FPaths::GameDir() + "fps.txt"),
 			FFileHelper::EEncodingOptions::AutoDetect, &IFileManager::Get(), EFileWrite::FILEWRITE_Append);
 	}
+
+	// Automatic Movement for testing
+	if (Controller && Controller->IsLocalController())
+	{
+		APlayerController *PlayerController = (APlayerController*)Controller;
+		if (Time > 10.0)
+		{
+			Time = 0.0;
+			if (bIsMoving)
+			{
+				PlayerController->InputKey(EKeys::W, EInputEvent::IE_Released, 1.0, false);
+				bIsMoving = false;
+			}
+			else
+			{
+				PlayerController->InputKey(EKeys::W, EInputEvent::IE_Pressed, 1.0, false);
+				bIsMoving = true;
+			}
+		}
+
+		if (Time > 3.0 && Time < 4.5)
+		{
+			if (bIsMoving)
+				PlayerController->InputAxis(EKeys::MouseX, 10.0, 0.01, 1, false);
+			else
+				PlayerController->InputAxis(EKeys::MouseX, -10.0, 0.01, 1, false);
+		}
+		if (Time > 3.5 && Time < 5.0 || Time > 7.0 && Time < 8.0) {
+			PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_DoubleClick, 1.0, false);
+			PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_Released, 1.0, false);
+		}
+	}
+	// End of Automatic Movement
 
 	if (bWantsToRun && !IsSprinting())
 	{
