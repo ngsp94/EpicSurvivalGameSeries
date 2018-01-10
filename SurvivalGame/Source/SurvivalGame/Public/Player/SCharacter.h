@@ -34,6 +34,7 @@ class SURVIVALGAME_API ASCharacter : public ASBaseCharacter
 	float Time;
 	float FPS;
 	bool bIsMoving;
+	bool bHasTurned;
 
 private:
 

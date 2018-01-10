@@ -48,6 +48,7 @@ ASCharacter::ASCharacter(const class FObjectInitializer& ObjectInitializer)
 	TargetingSpeedModifier = 0.5f;
 	SprintingSpeedModifier = 2.5f;
 	bIsMoving = false;
+	bHasTurned = false;
 
 	Health = 100;
 
@@ -89,6 +90,7 @@ void ASCharacter::Tick(float DeltaTime)
 	{
 		FFileHelper::SaveStringToFile("GAverageFPS = " + FString::SanitizeFloat(FPS) + '\n', *(FPaths::GameDir() + "fps.txt"),
 			FFileHelper::EEncodingOptions::AutoDetect, &IFileManager::Get(), EFileWrite::FILEWRITE_Append);
+		bHasTurned = false;
 	}
 
 	// Automatic Movement for testing
@@ -110,12 +112,13 @@ void ASCharacter::Tick(float DeltaTime)
 			}
 		}
 
-		if (Time > 3.0 && Time < 4.5)
+		if (Time > 3.0 && !bHasTurned)
 		{
 			if (bIsMoving)
-				PlayerController->InputAxis(EKeys::MouseX, 10.0, 0.01, 1, false);
+				PlayerController->InputAxis(EKeys::MouseX, 500.0, 1, 1, false);
 			else
-				PlayerController->InputAxis(EKeys::MouseX, -10.0, 0.01, 1, false);
+				PlayerController->InputAxis(EKeys::MouseX, -500.0, 1, 1, false);
+			bHasTurned = true;
 		}
 		if (Time > 3.5 && Time < 5.0 || Time > 7.0 && Time < 8.0) {
 			PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_DoubleClick, 1.0, false);
