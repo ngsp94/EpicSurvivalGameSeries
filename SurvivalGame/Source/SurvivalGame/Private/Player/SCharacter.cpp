@@ -115,9 +115,9 @@ void ASCharacter::Tick(float DeltaTime)
 		if (Time > 3.0 && !bHasTurned)
 		{
 			if (bIsMoving)
-				PlayerController->InputAxis(EKeys::MouseX, 500.0, 1, 1, false);
+				PlayerController->InputAxis(EKeys::MouseX, 1100.0, 1, 1, false);
 			else
-				PlayerController->InputAxis(EKeys::MouseX, -500.0, 1, 1, false);
+				PlayerController->InputAxis(EKeys::MouseX, -1100.0, 1, 1, false);
 			bHasTurned = true;
 		}
 		if (Time > 3.5 && Time < 5.0 || Time > 7.0 && Time < 8.0) {
