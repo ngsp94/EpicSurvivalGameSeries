@@ -3,6 +3,7 @@
 #pragma once
 
 #include "SBaseCharacter.h"
+#include <ctime>
 #include "SCharacter.generated.h"
 
 UCLASS()
@@ -31,6 +32,7 @@ class SURVIVALGAME_API ASCharacter : public ASBaseCharacter
 
 	float LastMakeNoiseTime;
 
+	time_t PrevTime;
 	float Time;
 	float FPS;
 	bool bIsMoving;

@@ -50,6 +50,10 @@ ASCharacter::ASCharacter(const class FObjectInitializer& ObjectInitializer)
 	bIsMoving = false;
 	bHasTurned = false;
 
+	Time = 0.0f;
+	PrevTime = std::time(0);
+	FPS = 0.0f;
+
 	Health = 100;
 
 	IncrementHungerAmount = 5.0f;
@@ -84,12 +88,14 @@ void ASCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Generate FPS
-	Time += DeltaTime;
-	FPS = 1.0 / DeltaTime;
+	Time += difftime(std::time(0), PrevTime);
+	PrevTime = std::time(0);
+	FPS += 1.0;
 	if (Time > 10.0)
 	{
-		FFileHelper::SaveStringToFile("GAverageFPS = " + FString::SanitizeFloat(FPS) + '\n', *(FPaths::GameDir() + "fps.txt"),
+		FFileHelper::SaveStringToFile("GAverageFPS = " + FString::SanitizeFloat(FPS/10.0) + '\n', *(FPaths::GameDir() + "fps.txt"),
 			FFileHelper::EEncodingOptions::AutoDetect, &IFileManager::Get(), EFileWrite::FILEWRITE_Append);
+		FPS = 0;
 		bHasTurned = false;
 	}
 
