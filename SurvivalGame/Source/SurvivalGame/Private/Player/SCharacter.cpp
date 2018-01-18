@@ -88,7 +88,8 @@ void ASCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Generate FPS
-	Time += difftime(std::time(0), PrevTime);
+	double deltaTime = difftime(std::time(0), PrevTime);
+	Time += deltaTime;
 	PrevTime = std::time(0);
 	FPS += 1.0;
 	if (Time > 10.0)
@@ -98,6 +99,9 @@ void ASCharacter::Tick(float DeltaTime)
 		FPS = 0;
 		bHasTurned = false;
 	}
+	// Change speed to decouple distance from FPS
+	UCharacterMovementComponent* MoveComp = GetCharacterMovement();
+	MoveComp->MaxWalkSpeed = 8000.0 * DeltaTime;
 
 	// Automatic Movement for testing
 	if (Controller && Controller->IsLocalController())
@@ -121,9 +125,9 @@ void ASCharacter::Tick(float DeltaTime)
 		if (Time > 3.0 && !bHasTurned)
 		{
 			if (bIsMoving)
-				PlayerController->InputAxis(EKeys::MouseX, 1100.0, 1, 1, false);
+				PlayerController->InputAxis(EKeys::MouseX, 1100.0, deltaTime, 1, false);
 			else
-				PlayerController->InputAxis(EKeys::MouseX, -1100.0, 1, 1, false);
+				PlayerController->InputAxis(EKeys::MouseX, -1100.0, deltaTime, 1, false);
 			bHasTurned = true;
 		}
 		if (Time > 3.5 && Time < 5.0 || Time > 7.0 && Time < 8.0) {
