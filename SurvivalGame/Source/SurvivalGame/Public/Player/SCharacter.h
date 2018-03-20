@@ -35,6 +35,8 @@ class SURVIVALGAME_API ASCharacter : public ASBaseCharacter
 	float Time;
 	bool bIsMoving;
 	bool bHasTurned;
+	int RandSeed;
+	FRandomStream Rand;
 
 private:
 

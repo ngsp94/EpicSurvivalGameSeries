@@ -79,7 +79,23 @@ void ASCharacter::BeginPlay()
 		// Set a timer to increment hunger every interval
 		FTimerHandle Handle;
 		GetWorldTimerManager().SetTimer(Handle, this, &ASCharacter::IncrementHunger, IncrementHungerInterval, true);
+
 	}
+
+	// SP Edit: Seed the random int using settings from DefaultGame.ini
+	FString RandSeedStr;
+	GConfig->GetString(
+		TEXT("/Script/EngineSettings.GeneralProjectSettings"),
+		TEXT("RandSeed"),
+		RandSeedStr,
+		GGameIni
+	);
+
+	int ctrId;
+	auto GameEngine = Cast<UGameEngine>(GEngine);
+	GameEngine->GameInstanceArray.Find(GetGameInstance(), ctrId);
+	RandSeed = FCString::Atoi(*RandSeedStr);
+	Rand = FRandomStream(RandSeed + ctrId);
 }
 
 
@@ -114,6 +130,10 @@ void ASCharacter::Tick(float DeltaTime)
 				bIsMoving = true;
 			}
 			bHasTurned = false;
+
+			// SP Edit: Set a random offset for different game state per player
+			// (Adaptive bit rate)
+			Time += Rand.RandHelper(10);
 		}
 
 		if (Time > 3.0 && !bHasTurned)
@@ -122,7 +142,9 @@ void ASCharacter::Tick(float DeltaTime)
 			bHasTurned = true;
 		}
 		if (Time > 3.5 && Time < 5.0 || Time > 7.0 && Time < 8.0) {
-			PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_DoubleClick, 1.0, false);
+			PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_Pressed, 1.0, false);			
+		}
+		else {
 			PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_Released, 1.0, false);
 		}
 	}
