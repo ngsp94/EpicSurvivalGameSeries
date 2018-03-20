@@ -51,8 +51,6 @@ ASCharacter::ASCharacter(const class FObjectInitializer& ObjectInitializer)
 	bIsMoving = false;
 	bHasTurned = false;
 
-	Time = 0.0f;
-
 	Health = 100;
 
 	IncrementHungerAmount = 5.0f;
@@ -94,8 +92,10 @@ void ASCharacter::BeginPlay()
 	int ctrId;
 	auto GameEngine = Cast<UGameEngine>(GEngine);
 	GameEngine->GameInstanceArray.Find(GetGameInstance(), ctrId);
-	RandSeed = FCString::Atoi(*RandSeedStr);
+	int RandSeed = FCString::Atoi(*RandSeedStr);
 	Rand = FRandomStream(RandSeed + ctrId);
+
+	Time = 0.0f;
 }
 
 
@@ -138,7 +138,8 @@ void ASCharacter::Tick(float DeltaTime)
 
 		if (Time > 3.0 && !bHasTurned)
 		{
-			PlayerController->InputAxis(EKeys::MouseX, 1100.0, 1, 1, false);
+			// SP Edit: change rotation to fixed angle
+			PlayerController->RotationInput.Add(0.0, 170.0, 0.0);
 			bHasTurned = true;
 		}
 		if (Time > 3.5 && Time < 5.0 || Time > 7.0 && Time < 8.0) {

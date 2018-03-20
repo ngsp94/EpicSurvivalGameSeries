@@ -71,6 +71,9 @@ protected:
 	/* Handles bot spawning (during nighttime) */
 	void SpawnBotHandler();
 
+	// SP Edit: add seeded random to control zombie spawning
+	FRandomStream Rand;
+
 	/************************************************************************/
 	/* Player Spawning                                                      */
 	/************************************************************************/

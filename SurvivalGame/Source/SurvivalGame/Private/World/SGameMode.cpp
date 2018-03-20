@@ -45,6 +45,21 @@ void ASGameMode::InitGameState()
 	{
 		MyGameState->ElapsedGameMinutes = TimeOfDayStart;
 	}
+
+	// SP Edit: Seed the random int using settings from DefaultGame.ini
+	FString RandSeedStr;
+	GConfig->GetString(
+		TEXT("/Script/EngineSettings.GeneralProjectSettings"),
+		TEXT("RandSeed"),
+		RandSeedStr,
+		GGameIni
+	);
+
+	int ctrId;
+	auto GameEngine = Cast<UGameEngine>(GEngine);
+	GameEngine->GameInstanceArray.Find(GetGameInstance(), ctrId);
+	int RandSeed = FCString::Atoi(*RandSeedStr);
+	Rand = FRandomStream(RandSeed + ctrId);
 }
 
 
@@ -214,11 +229,13 @@ AActor* ASGameMode::ChoosePlayerStart_Implementation(AController* Player)
 	APlayerStart* BestStart = nullptr;
 	if (PreferredSpawns.Num() > 0)
 	{
-		BestStart = PreferredSpawns[FMath::RandHelper(PreferredSpawns.Num())];
+		// SP Edit: change to seeded random
+		BestStart = PreferredSpawns[Rand.RandHelper(PreferredSpawns.Num())];
 	}
 	else if (FallbackSpawns.Num() > 0)
 	{
-		BestStart = FallbackSpawns[FMath::RandHelper(FallbackSpawns.Num())];
+		// SP Edit: change to seeded random
+		BestStart = FallbackSpawns[Rand.RandHelper(FallbackSpawns.Num())];
 	}
 
 	/* If we failed to find any (so BestStart is nullptr) fall back to the base code */
