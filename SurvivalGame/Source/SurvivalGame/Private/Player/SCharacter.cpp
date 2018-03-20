@@ -9,6 +9,7 @@
 #include "SCarryObjectComponent.h"
 #include "SBaseCharacter.h"
 #include "Runtime/Engine/Classes/Animation/AnimInstance.h"
+#include "ICloudyGameStateAPI.h"
 
 // Sets default values
 ASCharacter::ASCharacter(const class FObjectInitializer& ObjectInitializer)
@@ -65,6 +66,7 @@ ASCharacter::ASCharacter(const class FObjectInitializer& ObjectInitializer)
 	WeaponAttachPoint = TEXT("WeaponSocket");
 	PelvisAttachPoint = TEXT("PelvisSocket");
 	SpineAttachPoint = TEXT("SpineSocket");
+
 }
 
 
@@ -116,10 +118,7 @@ void ASCharacter::Tick(float DeltaTime)
 
 		if (Time > 3.0 && !bHasTurned)
 		{
-			if (bIsMoving)
-				PlayerController->InputAxis(EKeys::MouseX, 1100.0, 1, 1, false);
-			else
-				PlayerController->InputAxis(EKeys::MouseX, -1100.0, 1, 1, false);
+			PlayerController->InputAxis(EKeys::MouseX, 1100.0, 1, 1, false);
 			bHasTurned = true;
 		}
 		if (Time > 3.5 && Time < 5.0 || Time > 7.0 && Time < 8.0) {
@@ -181,6 +180,9 @@ void ASCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis("MoveRight", this, &ASCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("Turn", this, &ASCharacter::CallLooking);
+	PlayerInputComponent->BindAxis("LookUp", this, &ASCharacter::CallLooking);
+	
 
 	PlayerInputComponent->BindAction("SprintHold", IE_Pressed, this, &ASCharacter::OnStartSprinting);
 	PlayerInputComponent->BindAction("SprintHold", IE_Released, this, &ASCharacter::OnStopSprinting);
@@ -212,6 +214,13 @@ void ASCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("PickupObject", IE_Pressed, this, &ASCharacter::OnToggleCarryActor);
 }
 
+void ASCharacter::CallLooking(float val)
+{
+	if (val != 0)
+	{
+		ICloudyGameStateAPI::Get().Cloudy_LookingStart(GetWorld());
+	}
+}
 
 void ASCharacter::MoveForward(float Val)
 {
@@ -221,6 +230,8 @@ void ASCharacter::MoveForward(float Val)
 		const bool bLimitRotation = (GetCharacterMovement()->IsMovingOnGround() || GetCharacterMovement()->IsFalling());
 		const FRotator Rotation = bLimitRotation ? GetActorRotation() : Controller->GetControlRotation();
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
+
+		ICloudyGameStateAPI::Get().Cloudy_MovementStart(GetWorld());
 
 		AddMovementInput(Direction, Val);
 	}
@@ -233,6 +244,8 @@ void ASCharacter::MoveRight(float Val)
 	{
 		const FRotator Rotation = GetActorRotation();
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
+
+		ICloudyGameStateAPI::Get().Cloudy_MovementStart(GetWorld());
 		AddMovementInput(Direction, Val);
 	}
 }
@@ -382,6 +395,7 @@ bool ASCharacter::ServerSetIsJumping_Validate(bool NewJumping)
 
 void ASCharacter::OnStartSprinting()
 {
+	ICloudyGameStateAPI::Get().Cloudy_MovementStart(GetWorld());
 	if (CarriedObjectComp->GetIsCarryingActor())
 	{
 		CarriedObjectComp->Drop();
@@ -393,6 +407,7 @@ void ASCharacter::OnStartSprinting()
 
 void ASCharacter::OnStopSprinting()
 {
+	ICloudyGameStateAPI::Get().Cloudy_MovementStop(GetWorld());
 	SetSprinting(false);
 }
 
@@ -708,18 +723,23 @@ void ASCharacter::OnStartFire()
 		return;
 	}
 
+	ICloudyGameStateAPI::Get().Cloudy_ActiveStart(GetWorld(), true);
+
 	StartWeaponFire();
 }
 
 
 void ASCharacter::OnStopFire()
 {
+	ICloudyGameStateAPI::Get().Cloudy_ActiveStop(GetWorld());
+
 	StopWeaponFire();
 }
 
 
 void ASCharacter::StartWeaponFire()
 {
+	ICloudyGameStateAPI::Get().Cloudy_ActiveStart(GetWorld(), true);
 	if (!bWantsToFire)
 	{
 		bWantsToFire = true;
@@ -733,6 +753,7 @@ void ASCharacter::StartWeaponFire()
 
 void ASCharacter::StopWeaponFire()
 {
+	ICloudyGameStateAPI::Get().Cloudy_ActiveStop(GetWorld());
 	if (bWantsToFire)
 	{
 		bWantsToFire = false;

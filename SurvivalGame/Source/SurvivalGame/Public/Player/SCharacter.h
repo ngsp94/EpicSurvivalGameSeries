@@ -31,6 +31,7 @@ class SURVIVALGAME_API ASCharacter : public ASBaseCharacter
 
 	float LastMakeNoiseTime;
 
+	// SP Edit: vars for automated movement
 	float Time;
 	bool bIsMoving;
 	bool bHasTurned;
@@ -68,6 +69,8 @@ public:
 	/************************************************************************/
 	/* Movement                                                             */
 	/************************************************************************/
+
+	void CallLooking(float val);
 
 	virtual void MoveForward(float Val);
 
