@@ -50,8 +50,6 @@ ASCharacter::ASCharacter(const class FObjectInitializer& ObjectInitializer)
 	bIsMoving = false;
 	bHasTurned = false;
 
-	Time = 0.0f;
-
 	Health = 100;
 
 	IncrementHungerAmount = 5.0f;
@@ -78,6 +76,23 @@ void ASCharacter::BeginPlay()
 		FTimerHandle Handle;
 		GetWorldTimerManager().SetTimer(Handle, this, &ASCharacter::IncrementHunger, IncrementHungerInterval, true);
 	}
+
+	// SP Edit: Seed the random int using settings from DefaultGame.ini
+	FString RandSeedStr;
+	GConfig->GetString(
+		TEXT("/Script/EngineSettings.GeneralProjectSettings"),
+		TEXT("RandSeed"),
+		RandSeedStr,
+		GGameIni
+	);
+
+	int ctrId;
+	auto GameEngine = Cast<UGameEngine>(GEngine);
+	GameEngine->GameInstanceArray.Find(GetGameInstance(), ctrId);
+	int RandSeed = FCString::Atoi(*RandSeedStr);
+	Rand = FRandomStream(RandSeed + ctrId);
+
+	Time = 0.0f;
 }
 
 
@@ -95,6 +110,7 @@ void ASCharacter::Tick(float DeltaTime)
 	MoveComp->MaxWalkSpeed = FMath::Min(FMath::Max(int(4000.0 * deltaTime), 100), 400);
 
 	// Automatic Movement for testing
+	/*
 	if (Controller && Controller->IsLocalController())
 	{
 		APlayerController *PlayerController = (APlayerController*)Controller;
@@ -112,20 +128,77 @@ void ASCharacter::Tick(float DeltaTime)
 				bIsMoving = true;
 			}
 			bHasTurned = false;
+
+			// SP Edit: Set a random offset for different game state per player
+			// (Adaptive bit rate)
+			Time += Rand.RandHelper(10);
 		}
 
 		if (Time > 3.0 && !bHasTurned)
 		{
-			if (bIsMoving)
-				PlayerController->InputAxis(EKeys::MouseX, 1100.0, 1, 1, false);
-			else
-				PlayerController->InputAxis(EKeys::MouseX, -1100.0, 1, 1, false);
+			// SP Edit: change to fixed angle
+			// PlayerController->InputAxis(EKeys::MouseX, 1100.0, 1, 1, false);
+			PlayerController->RotationInput.Add(0.0, 170.0, 0.0);
 			bHasTurned = true;
 		}
 		if (Time > 3.5 && Time < 5.0 || Time > 7.0 && Time < 8.0) {
-			PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_DoubleClick, 1.0, false);
+			PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_Pressed, 1.0, false);
+		}
+		else {
 			PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_Released, 1.0, false);
 		}
+	}
+	*/
+	int ctrId;
+	auto GameEngine = Cast<UGameEngine>(GEngine);
+	GameEngine->GameInstanceArray.Find(GetGameInstance(), ctrId);
+	int action = ctrId;
+
+	// Player 0 idle for 30s, then move
+	// Player 1 move for 30s, then shoot
+	// Player 2 shoot for 30s, then idle
+	// Player 3 random
+
+	if (Controller && Controller->IsLocalController())
+	{
+		APlayerController *PlayerController = (APlayerController*)Controller;
+		/*
+		if (Time > 30.0 && ctrId < 3)
+		{
+			action = (ctrId + 1) % 3;
+		}
+		
+		if (ctrId == 3) // Random action
+		{
+			action = Rand.RandHelper(3);
+		}
+
+		if (ctrId != 3 || fmod(Time, 5) < 1.0) // for player 3, change action once per 5 second
+		{
+		*/
+			PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_Released, 1.0, false);
+
+			switch (action)
+			{
+				case 0:
+				case 1:
+				case 2: // Don't move
+					PlayerController->InputKey(EKeys::W, EInputEvent::IE_Released, 1.0, false);
+					break;
+		
+				default: // Move and Shoot
+					PlayerController->InputKey(EKeys::W, EInputEvent::IE_Pressed, 1.0, false);
+					PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_Pressed, 1.0, false);
+					break;
+			
+					/*
+				default: // Shoot
+					PlayerController->InputKey(EKeys::W, EInputEvent::IE_Released, 1.0, false);
+					PlayerController->InputKey(EKeys::LeftMouseButton, EInputEvent::IE_Pressed, 1.0, false);
+					break;
+					*/
+			}
+		//}
 	}
 	// End of Automatic Movement
 
